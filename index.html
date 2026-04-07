@@ -29,6 +29,9 @@ h1 {
   text-align: center;
   cursor: pointer;
   transition: 0.2s;
+  text-decoration: none; /* 🔥 importante */
+  color: white; /* 🔥 importante */
+  display: block;
 }
 
 .card:hover {
@@ -61,7 +64,7 @@ fetch("canais.m3u")
       if (linhas[i].startsWith("#EXTINF")) {
 
         let info = linhas[i];
-        let url = linhas[i + 1];
+        let url = linhas[i + 1]?.trim(); // 🔥 garante que não tenha quebra
 
         let nome = info.split(",")[1];
 
@@ -76,20 +79,21 @@ fetch("canais.m3u")
 
     canais.forEach(canal => {
 
-      const div = document.createElement("div");
-      div.className = "card";
+      // 🔥 AGORA É LINK, NÃO DIV
+      const link = document.createElement("a");
 
-      div.innerHTML = `
+      link.href = canal.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      link.className = "card";
+
+      link.innerHTML = `
         <img src="${canal.logo}">
         <p>${canal.nome}</p>
       `;
 
-      // 🔥 abre em nova aba (sem iframe)
-      div.onclick = () => {
-        window.open(canal.url, "_blank");
-      };
-
-      container.appendChild(div);
+      container.appendChild(link);
     });
 
   });
