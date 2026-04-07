@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Meu IPTV</title>
+
+<style>
+body {
+  background: #111;
+  color: white;
+  font-family: Arial;
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+.card {
+  background: #1c1c1c;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📺 Meus Canais</h1>
+
+<div class="container" id="lista"></div>
+
+<script>
+fetch("canais.m3u")
+  .then(res => res.text())
+  .then(text => {
+
+    const linhas = text.split("\n");
+    let canais = [];
+
+    for (let i = 0; i < linhas.length; i++) {
+
+      if (linhas[i].startsWith("#EXTINF")) {
+
+        let info = linhas[i];
+        let url = linhas[i + 1];
+
+        let nome = info.split(",")[1];
+
+        let logoMatch = info.match(/tvg-logo="(.*?)"/);
+        let logo = logoMatch ? logoMatch[1] : "";
+
+        canais.push({ nome, logo, url });
+      }
+    }
+
+    const container = document.getElementById("lista");
+
+    canais.forEach(canal => {
+
+      const div = document.createElement("div");
+      div.className = "card";
+
+      div.innerHTML = `
+        <img src="${canal.logo}">
+        <p>${canal.nome}</p>
+      `;
+
+      // 🔥 abre em nova aba (sem iframe)
+      div.onclick = () => {
+        window.open(canal.url, "_blank");
+      };
+
+      container.appendChild(div);
+    });
+
+  });
+</script>
+
+</body>
+</html>
